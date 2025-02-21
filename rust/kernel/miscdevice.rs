@@ -200,7 +200,7 @@ impl<T: MiscDevice> MiscdeviceVTable<T> {
         // type.
         //
         // SAFETY: The open call of a file can access the private data.
-        unsafe { (*raw_file).private_data = ptr.into_foreign() };
+        unsafe { (*raw_file).private_data = ptr.into_foreign().cast() };
 
         0
     }
@@ -213,7 +213,7 @@ impl<T: MiscDevice> MiscdeviceVTable<T> {
         // SAFETY: The release call of a file owns the private data.
         let private = unsafe { (*file).private_data };
         // SAFETY: The release call of a file owns the private data.
-        let ptr = unsafe { <T::Ptr as ForeignOwnable>::from_foreign(private) };
+        let ptr = unsafe { <T::Ptr as ForeignOwnable>::from_foreign(private.cast()) };
 
         // SAFETY:
         // * The file is valid for the duration of this call.
@@ -230,7 +230,7 @@ impl<T: MiscDevice> MiscdeviceVTable<T> {
         // SAFETY: The ioctl call of a file can access the private data.
         let private = unsafe { (*file).private_data };
         // SAFETY: Ioctl calls can borrow the private data of the file.
-        let device = unsafe { <T::Ptr as ForeignOwnable>::borrow(private) };
+        let device = unsafe { <T::Ptr as ForeignOwnable>::borrow(private.cast()) };
 
         // SAFETY:
         // * The file is valid for the duration of this call.
@@ -255,7 +255,7 @@ impl<T: MiscDevice> MiscdeviceVTable<T> {
         // SAFETY: The compat ioctl call of a file can access the private data.
         let private = unsafe { (*file).private_data };
         // SAFETY: Ioctl calls can borrow the private data of the file.
-        let device = unsafe { <T::Ptr as ForeignOwnable>::borrow(private) };
+        let device = unsafe { <T::Ptr as ForeignOwnable>::borrow(private.cast()) };
 
         // SAFETY:
         // * The file is valid for the duration of this call.
@@ -276,7 +276,7 @@ impl<T: MiscDevice> MiscdeviceVTable<T> {
         // SAFETY: The release call of a file owns the private data.
         let private = unsafe { (*file).private_data };
         // SAFETY: Ioctl calls can borrow the private data of the file.
-        let device = unsafe { <T::Ptr as ForeignOwnable>::borrow(private) };
+        let device = unsafe { <T::Ptr as ForeignOwnable>::borrow(private.cast()) };
         // SAFETY:
         // * The file is valid for the duration of this call.
         // * There is no active fdget_pos region on the file on this thread.
